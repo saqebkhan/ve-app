@@ -20,6 +20,7 @@ onMounted(async () => {
     return;
   }
 
+  
   try {
     const { data } = await api.get(`${API_URLS.VERIFY_EMAIL}?token=${token}`);
     if (data.success) {
