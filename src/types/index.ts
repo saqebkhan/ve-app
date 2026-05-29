@@ -166,6 +166,7 @@ export interface Pagination {
 // ─── Inventory Stats ──────────────────────────────────────────────────────────
 export interface InventoryStats {
   total: number;
+  totalStock: number;
   drafts: number;
   outOfStock: number;
   lowStock: number;

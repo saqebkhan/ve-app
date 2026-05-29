@@ -34,7 +34,7 @@ export const useInventory = () => {
     hasNext: false,
     hasPrev: false,
   });
-  const stats = ref<InventoryStats>({ total: 0, drafts: 0, outOfStock: 0, lowStock: 0 });
+  const stats = ref<InventoryStats>({ total: 0, totalStock: 0, drafts: 0, outOfStock: 0, lowStock: 0 });
   const loading = ref(false);
   const saving = ref(false);
   const deleting = ref(false);

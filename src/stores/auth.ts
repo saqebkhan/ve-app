@@ -1,13 +1,13 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { User } from '@/types';
-import { useNotificationStore } from './notification';
-import { useThemeStore } from './theme';
-import api from '@/services/api';
-import { API_URLS, ROUTE_NAMES } from '@/constants';
-import router from '@/router';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import type { User } from "@/types";
+import { useNotificationStore } from "./notification";
+import { useThemeStore } from "./theme";
+import api from "@/services/api";
+import { API_URLS, ROUTE_NAMES } from "@/constants";
+import router from "@/router";
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   // ─── State ───────────────────────────────────────────────────────────────────
   const user = ref<User | null>(null);
   const loading = ref(false);
@@ -18,12 +18,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value);
   const isEmailVerified = computed(() => !!user.value?.isEmailVerified);
   const userInitials = computed(() => {
-    if (!user.value?.name) return '?';
+    if (!user.value?.name) return "?";
     return user.value.name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
       .slice(0, 2)
-      .join('')
+      .join("")
       .toUpperCase();
   });
 
@@ -41,11 +41,18 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = msg;
   };
 
+  // Mark as initialized without calling API
+  const markInitialized = (): void => {
+    initialized.value = true;
+  };
+
   // Initialize — try to restore session from cookie
   const initialize = async (): Promise<void> => {
     if (initialized.value) return;
     try {
-      const { data } = await api.get<{ success: boolean; data: User }>(API_URLS.ME);
+      const { data } = await api.get<{ success: boolean; data: User }>(
+        API_URLS.ME
+      );
       if (data.success) user.value = data.data;
     } catch {
       // Not authenticated — silently fail
@@ -59,15 +66,21 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     clearError();
     try {
-      const { data } = await api.post<{ success: boolean; data: User; message: string }>(
-        API_URLS.LOGIN,
-        { email, password }
-      );
+      const { data } = await api.post<{
+        success: boolean;
+        data: User;
+        message: string;
+      }>(API_URLS.LOGIN, { email, password });
       user.value = data.data;
-      useNotificationStore().success('Welcome back!', `Hello, ${data.data.name} 👋`);
+      useNotificationStore().success(
+        "Welcome back!",
+        `Hello, ${data.data.name} 👋`
+      );
       return true;
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Login failed";
       setError(msg);
       useNotificationStore().error(msg);
       return false;
@@ -88,7 +101,9 @@ export const useAuthStore = defineStore('auth', () => {
       await api.post(API_URLS.REGISTER, { name, email, password, shopName });
       return true;
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Registration failed";
       setError(msg);
       return false;
     } finally {
@@ -107,13 +122,15 @@ export const useAuthStore = defineStore('auth', () => {
       // Reset sidebar collapse on logout
       useThemeStore().isSidebarCollapsed = false;
       await router.push({ name: ROUTE_NAMES.LOGIN });
-      useNotificationStore().info('You have been logged out.');
+      useNotificationStore().info("You have been logged out.");
     }
   };
 
   const fetchMe = async (): Promise<void> => {
     try {
-      const { data } = await api.get<{ success: boolean; data: User }>(API_URLS.ME);
+      const { data } = await api.get<{ success: boolean; data: User }>(
+        API_URLS.ME
+      );
       if (data.success) user.value = data.data;
     } catch {
       user.value = null;
@@ -127,7 +144,9 @@ export const useAuthStore = defineStore('auth', () => {
       await api.post(API_URLS.FORGOT_PASSWORD, { email });
       return true;
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Request failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Request failed";
       setError(msg);
       return false;
     } finally {
@@ -149,7 +168,9 @@ export const useAuthStore = defineStore('auth', () => {
       });
       return true;
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Reset failed';
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Reset failed";
       setError(msg);
       return false;
     } finally {
@@ -169,6 +190,7 @@ export const useAuthStore = defineStore('auth', () => {
     userInitials,
     // Actions
     initialize,
+    markInitialized,
     login,
     register,
     logout,
