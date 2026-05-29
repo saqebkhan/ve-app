@@ -6,7 +6,7 @@ import router from '@/router';
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 const api = axios.create({
-  baseURL: '/', // Vite proxies /api → http://localhost:5000
+  baseURL: import.meta.env.VITE_API_URL || '/', // Vite proxies /api → https://ve-api.onrender.com
   withCredentials: true, // Send httpOnly cookies automatically
   headers: {
     'Content-Type': 'application/json',
